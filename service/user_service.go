@@ -11,7 +11,7 @@ import (
 
 type UserServices interface {
 	GetAllUser() ([]*entity.User, error)
-	LoginUser(email, password string) error
+	LoginUser(email, password string) (string, error)
 	RegisterUser(e entity.User) error
 }
 
@@ -64,18 +64,19 @@ func (u *userSevicesImplementation) GetAllUser() ([]*entity.User, error) {
 	return ul, err
 }
 
-func (u *userSevicesImplementation) LoginUser(email, password string) error {
+func (u *userSevicesImplementation) LoginUser(email, password string) (string, error) {
 
 	ul, err := u.repository.GetUserByEmail(email)
 	fmt.Printf("ul: %v\n", ul)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	//fmt.Println(utils.ComparePassword(ul.Password, password))
 	if !utils.ComparePassword(ul.Password, password) {
-		return errors.New("wrong password")
+		return "", errors.New("wrong password")
 	}
+	token, _ := utils.GenerateToken(uint(ul.ID))
 
-	return nil
+	return token, nil
 }

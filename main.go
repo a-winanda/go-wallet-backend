@@ -19,9 +19,15 @@ func main() {
 	userService := service.NewUserServices(userRepository)
 	userHandler := handler.NewUserHandler(userService)
 
+	transactionRepository := repository.NewTransactionRepository(db)
+	transactionService := service.NewTransactionServices(transactionRepository, userRepository)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
+
 	router.POST("/register", userHandler.RegisterUser())
 	router.POST("/login", userHandler.LoginUser())
 	router.Use(utils.JwtAuthMiddleware()).GET("/users", userHandler.GetAllUser())
+
+	router.Use(utils.JwtAuthMiddleware()).POST("/top-up", transactionHandler.TopUpWallet())
 
 	//router.Static("/documentation", "dist/")
 

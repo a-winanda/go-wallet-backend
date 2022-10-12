@@ -3,7 +3,6 @@ package handler
 import (
 	"assignment-golang-backend/entity"
 	"assignment-golang-backend/service"
-	"assignment-golang-backend/utils"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -80,7 +79,7 @@ func (u *UserHandler) LoginUser() gin.HandlerFunc {
 
 		//fmt.Printf("ul di handler: %v\n", ul)
 
-		err = u.service.LoginUser(ul.Email, ul.Password)
+		token, err := u.service.LoginUser(ul.Email, ul.Password)
 
 		if err != nil {
 			ctx.JSON(http.StatusOK, gin.H{
@@ -89,7 +88,6 @@ func (u *UserHandler) LoginUser() gin.HandlerFunc {
 			return
 		}
 
-		token, _ := utils.GenerateToken(uint(ul.ID))
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "Success",
 			"Token":   token,

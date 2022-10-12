@@ -3,6 +3,7 @@ package repository
 import (
 	"assignment-golang-backend/entity"
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -96,7 +97,8 @@ func (u *userRepositoryImplementation) AddWalletBalance(wn, amount int) error {
 		return err
 	}
 
-	u.db.Model(&wallet).Update("balance + ?", amount)
+	u.db.Model(&wallet).Where("wallet_number = ?", wn).UpdateColumn("balance", gorm.Expr("balance + ?", amount))
+	fmt.Printf("wallet.Balance: %v\n", wallet)
 
 	return nil
 }
