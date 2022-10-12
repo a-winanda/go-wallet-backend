@@ -9,8 +9,12 @@ import (
 
 type UserRepository interface {
 	GetAllUser() ([]*entity.User, error)
-	GetUserByEmail(email string) (*entity.User, error)
+	GetUserByEmail(string) (*entity.User, error)
 	RegisterUser(e *entity.User) error
+	GenerateWallet(int) error
+	GetWalletByUID(uid int) (*entity.Wallet, error)
+	AddWalletBalance(wn, amount int) error
+	ReduceWalletBalance(wn, amount int) error
 }
 
 type userRepositoryImplementation struct {
@@ -54,4 +58,60 @@ func (u *userRepositoryImplementation) GetAllUser() ([]*entity.User, error) {
 		return nil, errors.New("user database is empty")
 	}
 	return users, nil
+}
+
+func (u *userRepositoryImplementation) GenerateWallet(id int) error {
+
+	NewWallet := &entity.Wallet{
+		UserID:  id,
+		Balance: 0,
+	}
+
+	err := u.db.Omit("WalletNumber").Create(&NewWallet).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *userRepositoryImplementation) GetWalletByUID(uid int) (*entity.Wallet, error) {
+
+	var w *entity.Wallet
+
+	err := u.db.Where("user_id = ?", uid).First(&w).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return w, nil
+}
+
+func (u *userRepositoryImplementation) AddWalletBalance(wn, amount int) error {
+
+	var wallet *entity.Wallet
+
+	err := u.db.Where("wallet_number = ?", wn).First(&wallet).Error
+
+	if err != nil {
+		return err
+	}
+
+	u.db.Model(&wallet).Update("balance + ?", amount)
+
+	return nil
+}
+
+func (u *userRepositoryImplementation) ReduceWalletBalance(wn, amount int) error {
+
+	var wallet *entity.Wallet
+
+	err := u.db.Where("wallet_number = ?", wn).First(&wallet).Error
+
+	if err != nil {
+		return err
+	}
+
+	u.db.Model(&wallet).Update("balance - ?", amount)
+
+	return nil
 }

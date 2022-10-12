@@ -5,6 +5,7 @@ import (
 	"assignment-golang-backend/pkg/database/postgres"
 	"assignment-golang-backend/repository"
 	"assignment-golang-backend/service"
+	"assignment-golang-backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,13 +21,13 @@ func main() {
 
 	router.POST("/register", userHandler.RegisterUser())
 	router.POST("/login", userHandler.LoginUser())
-	router.GET("/users", userHandler.GetAllUser())
+	router.Use(utils.JwtAuthMiddleware()).GET("/users", userHandler.GetAllUser())
 
 	//router.Static("/documentation", "dist/")
 
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"message": "exercise-gin running",
+			"message": "assignment-go-be running",
 		})
 	})
 	router.Run()

@@ -47,6 +47,7 @@ func (u *UserHandler) RegisterUser() gin.HandlerFunc {
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": err.Error(),
 			})
+			return
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
@@ -69,7 +70,15 @@ func (u *UserHandler) LoginUser() gin.HandlerFunc {
 		}
 
 		var ul entity.User
-		err = json.Unmarshal(reqBody, ul)
+		err = json.Unmarshal(reqBody, &ul)
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		//fmt.Printf("ul di handler: %v\n", ul)
 
 		err = u.service.LoginUser(ul.Email, ul.Password)
 
@@ -77,6 +86,7 @@ func (u *UserHandler) LoginUser() gin.HandlerFunc {
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": err.Error(),
 			})
+			return
 		}
 
 		token, _ := utils.GenerateToken(uint(ul.ID))
@@ -91,18 +101,12 @@ func (u *UserHandler) LoginUser() gin.HandlerFunc {
 func (u *UserHandler) GetAllUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		// params := ctx.Request.URL.Query().Get("name")
-
-		// queryUser := fmt.Sprintf("%%%s%%", params)
-		// fmt.Printf("queryUser: %v\n", queryUser)
-
 		ul, err := u.service.GetAllUser()
 		if err != nil {
 
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": err.Error(),
 			})
-
 			return
 		}
 

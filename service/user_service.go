@@ -5,6 +5,8 @@ import (
 	"assignment-golang-backend/repository"
 	"assignment-golang-backend/utils"
 	"errors"
+	"fmt"
+	"time"
 )
 
 type UserServices interface {
@@ -33,17 +35,22 @@ func (u *userSevicesImplementation) RegisterUser(e entity.User) error {
 		return errors.New("password cant be empty")
 	}
 
+	createTime := time.Now()
 	hashPassword, err := utils.HashAndSalt(e.Password)
 	if err != nil {
 		return err
 	}
 
 	e.Password = hashPassword
+	e.CreatedAt = createTime
+	e.UpdatedAt = time.Time{}
 
 	err = u.repository.RegisterUser(&e)
 	if err != nil {
 		return err
 	}
+
+	u.repository.GenerateWallet(e.ID)
 
 	return nil
 }
@@ -60,11 +67,13 @@ func (u *userSevicesImplementation) GetAllUser() ([]*entity.User, error) {
 func (u *userSevicesImplementation) LoginUser(email, password string) error {
 
 	ul, err := u.repository.GetUserByEmail(email)
+	fmt.Printf("ul: %v\n", ul)
 	if err != nil {
 		return err
 	}
 
-	if ul.Password != password {
+	//fmt.Println(utils.ComparePassword(ul.Password, password))
+	if !utils.ComparePassword(ul.Password, password) {
 		return errors.New("wrong password")
 	}
 
