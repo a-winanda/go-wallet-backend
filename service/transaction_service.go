@@ -10,6 +10,7 @@ import (
 
 type TransactionServices interface {
 	TopUpWallet(entity.Transaction) error
+	TransferWallet(e entity.Transaction) error
 }
 
 type transactionServicesImplementation struct {
@@ -50,5 +51,44 @@ func (t *transactionServicesImplementation) TopUpWallet(e entity.Transaction) er
 		return err
 	}
 	t.userRepo.AddWalletBalance(e.WalletNumber, e.Amount)
+	return nil
+}
+
+func (t *transactionServicesImplementation) TransferWallet(e entity.Transaction) error {
+
+	source, err := t.userRepo.GetWalletByUID(e.SourceID)
+	if err != nil {
+		return err
+	}
+
+	target, err := t.userRepo.GetWalletByUID(e.TargetID)
+	if err != nil {
+		return err
+	}
+
+	if e.Amount < 1000 || e.Amount > 50000000 {
+		return errors.New("please input amount between 1000 and 50 million")
+	}
+
+	if source.Balance < e.Amount {
+		return errors.New("insufficient balance on your wallet")
+	}
+
+	if e.Description == "" || len(e.Description) > 35 {
+		return errors.New("description need to be less than 35 characters")
+	}
+
+	e.WalletNumber = source.WalletNumber
+	e.TransactionType = "Transfer"
+	e.CreatedAt = time.Now()
+
+	err = t.transactionRepository.CreateTransaction(&e)
+	if err != nil {
+		return err
+	}
+
+	t.userRepo.AddWalletBalance(target.WalletNumber, e.Amount)
+	t.userRepo.ReduceWalletBalance(source.WalletNumber, e.Amount)
+
 	return nil
 }

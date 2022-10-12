@@ -113,7 +113,7 @@ func (u *userRepositoryImplementation) ReduceWalletBalance(wn, amount int) error
 		return err
 	}
 
-	u.db.Model(&wallet).Update("balance - ?", amount)
+	u.db.Model(&wallet).Where("wallet_number = ?", wn).UpdateColumn("balance", gorm.Expr("balance - ?", amount))
 
 	return nil
 }

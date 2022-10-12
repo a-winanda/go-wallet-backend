@@ -61,3 +61,43 @@ func (t *TransactionHandler) TopUpWallet() gin.HandlerFunc {
 
 	}
 }
+
+func (t *TransactionHandler) TransferWallet() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		reqBody, err := io.ReadAll(ctx.Request.Body)
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		var td entity.Transaction
+		err = json.Unmarshal(reqBody, &td)
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		targetId, err := utils.ExtractTokenID(ctx)
+		td.SourceID = int(targetId)
+		//fmt.Printf("ul di handler: %v\n", ul)
+		t.service.TransferWallet(td)
+
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "Success",
+			"Data":    td,
+		})
+
+	}
+}
