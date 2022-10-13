@@ -36,7 +36,6 @@ func (t *transactionServicesImplementation) TopUpWallet(e entity.Transaction) er
 		return errors.New("please input amount between 50.000 and 50 million")
 	}
 
-	//fundSource := t.userRepo.
 	wallet, err := t.userRepo.GetWalletByUID(e.SourceID)
 	if err != nil {
 		return err

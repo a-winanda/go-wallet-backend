@@ -5,7 +5,6 @@ import (
 )
 
 type Transaction struct {
-	//gorm.Model
 	ID              int       `gorm:"column:id"`
 	WalletNumber    int       `gorm:"column:wallet_number"`
 	TransactionType string    `gorm:"column:transaction_type"`

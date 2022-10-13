@@ -11,9 +11,6 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-//copy dari medium
-//https://seefnasrul.medium.com/create-your-first-go-rest-api-with-jwt-authentication-in-gin-framework-dbe5bda72817
-
 func GenerateToken(user_id uint) (string, error) {
 
 	token_lifespan := 1

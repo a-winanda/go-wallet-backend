@@ -78,8 +78,6 @@ func (u *UserHandler) LoginUser() gin.HandlerFunc {
 			return
 		}
 
-		//fmt.Printf("ul di handler: %v\n", ul)
-
 		token, err := u.service.LoginUser(ul.Email, ul.Password)
 
 		if err != nil {
