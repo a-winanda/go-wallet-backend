@@ -197,3 +197,45 @@ func Test_userSevicesImplementation_GetUserDetails(t *testing.T) {
 		})
 	}
 }
+
+func Test_userSevicesImplementation_RegisterUser(t *testing.T) {
+	type fields struct {
+		repository mocks.UserRepository
+	}
+	type args struct {
+		e entity.User
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "TestRegiser",
+			fields: fields{
+				repository: *mocks.NewUserRepository(t),
+			},
+			args: args{
+				e: *TestDummy1,
+			},
+			wantErr: false,
+		},
+	}
+	for i, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			u := NewUserServices(&tt.fields.repository)
+
+			switch i {
+			case 0:
+				tt.fields.repository.On("RegisterUser", &tt.args.e).Return(nil)
+				tt.fields.repository.On("GenerateWallet", tt.args.e.ID).Return(nil)
+
+			}
+
+			if err := u.RegisterUser(tt.args.e); (err != nil) != tt.wantErr {
+				t.Errorf("userSevicesImplementation.RegisterUser() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
