@@ -3,6 +3,7 @@ package handler
 import (
 	"assignment-golang-backend/entity"
 	"assignment-golang-backend/service"
+	"assignment-golang-backend/utils"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -96,12 +97,19 @@ func (u *UserHandler) LoginUser() gin.HandlerFunc {
 	}
 }
 
-func (u *UserHandler) GetAllUser() gin.HandlerFunc {
+func (u *UserHandler) GetUserDetails() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		ul, err := u.service.GetAllUser()
+		uid, err := utils.ExtractTokenID(ctx)
 		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
 
+		wallet, user, err := u.service.GetUserDetails(int(uid))
+		if err != nil {
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": err.Error(),
 			})
@@ -110,8 +118,15 @@ func (u *UserHandler) GetAllUser() gin.HandlerFunc {
 
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "Success",
-			"Data":    ul,
+			"Data": gin.H{
+				"user_id": user.ID,
+				"email":   user.Email,
+				"wallet": gin.H{
+					"number":  wallet.WalletNumber,
+					"balance": wallet.Balance,
+				},
+			},
 		})
-	}
 
+	}
 }

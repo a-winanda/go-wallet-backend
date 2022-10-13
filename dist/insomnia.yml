@@ -1,0 +1,287 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [],
+  "paths": {
+    "/transactions": {
+      "get": {
+        "description": "Get Transaction By Login",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get Transaction By Login 200 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Get Transaction By Login 400 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Get Transaction By Login 401 Not Authenticated",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/transfer": {
+      "post": {
+        "description": "Transfer Wallet",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "targetId": {
+                    "type": "number",
+                    "example": 8
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 10000
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "kucing transfer kedua"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transfer Wallet 200 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Transfer Wallet 400 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Transfer Wallet 401 Not Authenticated",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/top-up": {
+      "post": {
+        "description": "Top-Up Wallet",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fundId": {
+                    "type": "number",
+                    "example": 2
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 75000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Top-Up Wallet 200 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Top-Up Wallet 400 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Top-Up Wallet 401 Not Authenticated",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "Login User",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "toji@jujutsu.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "passtoji"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login User 200 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Login User 400 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Login User 401 Not Authenticated",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user-detail": {
+      "get": {
+        "description": "Get User Detail",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get User Detail 200 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Get User Detail 400 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Get User Detail 401 Not Authenticated",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/register": {
+      "post": {
+        "description": "Register User",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "tomioka@kny.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "passtomioka"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Register User 200 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Register User 400 response generic",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Register User 401 Not Authenticated",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "security": []
+      }
+    }
+  }
+}

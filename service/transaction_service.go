@@ -44,14 +44,18 @@ func (t *transactionServicesImplementation) TopUpWallet(e entity.Transaction) er
 
 	e.WalletNumber = wallet.WalletNumber
 	e.TransactionType = "Top Up"
-	e.Description = fmt.Sprintf("Top Up from %d", e.Fund.SourceName)
-	e.CreatedAt = time.Now()
+	e.Description = fmt.Sprintf("Top Up from %s", e.Fund.SourceName)
+	//e.CreatedAt = time.Now()
 
 	err = t.transactionRepository.CreateTransaction(&e)
 	if err != nil {
 		return err
 	}
-	t.userRepo.AddWalletBalance(e.WalletNumber, e.Amount)
+	err = t.userRepo.AddWalletBalance(e.WalletNumber, e.Amount)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -78,8 +82,10 @@ func (t *transactionServicesImplementation) TransferWallet(e entity.Transaction)
 	if e.Description == "" || len(e.Description) > 35 {
 		return errors.New("description need to be less than 35 characters")
 	}
+	if e.SourceID == e.TargetID {
+		return errors.New("cannot transfer into the same wallet")
+	}
 
-	//e.FundID = 0
 	e.WalletNumber = source.WalletNumber
 	e.TransactionType = "Transfer"
 	e.CreatedAt = time.Now()

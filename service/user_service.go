@@ -5,14 +5,13 @@ import (
 	"assignment-golang-backend/repository"
 	"assignment-golang-backend/utils"
 	"errors"
-	"fmt"
 	"time"
 )
 
 type UserServices interface {
-	GetAllUser() ([]*entity.User, error)
 	LoginUser(email, password string) (string, error)
 	RegisterUser(e entity.User) error
+	GetUserDetails(int) (*entity.Wallet, *entity.User, error)
 }
 
 type userSevicesImplementation struct {
@@ -55,24 +54,27 @@ func (u *userSevicesImplementation) RegisterUser(e entity.User) error {
 	return nil
 }
 
-func (u *userSevicesImplementation) GetAllUser() ([]*entity.User, error) {
-
-	ul, err := u.repository.GetAllUser()
+func (u *userSevicesImplementation) GetUserDetails(uid int) (*entity.Wallet, *entity.User, error) {
+	ud, err := u.repository.GetUserByLogin(uid)
 	if err != nil {
-		return nil, errors.New("user database empty")
+		return nil, nil, err
 	}
-	return ul, err
+
+	w, err := u.repository.GetWalletByUID(uid)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return w, ud, nil
 }
 
 func (u *userSevicesImplementation) LoginUser(email, password string) (string, error) {
 
 	ul, err := u.repository.GetUserByEmail(email)
-	fmt.Printf("ul: %v\n", ul)
 	if err != nil {
 		return "", err
 	}
 
-	//fmt.Println(utils.ComparePassword(ul.Password, password))
 	if !utils.ComparePassword(ul.Password, password) {
 		return "", errors.New("wrong password")
 	}

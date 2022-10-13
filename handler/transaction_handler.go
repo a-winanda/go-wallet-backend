@@ -123,13 +123,6 @@ func (t *TransactionHandler) TransferWallet() gin.HandlerFunc {
 func (t *TransactionHandler) GetAllTransactionByLogin() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		// DefaultTransactionRequest := entity.TransactionRequest{
-		// 	DescriptionRequest: "",
-		// 	SortByEntity:       "created_at",
-		// 	SortOrder:          "desc",
-		// 	Limit:              10,
-		// }
-
 		descReq := ctx.Request.URL.Query().Get("s")
 		sortItem := ctx.Request.URL.Query().Get("sortBy")
 		sortOrder := ctx.Request.URL.Query().Get("sort")
@@ -137,14 +130,7 @@ func (t *TransactionHandler) GetAllTransactionByLogin() gin.HandlerFunc {
 
 		descAny := fmt.Sprintf("%%%s%%", descReq)
 
-		num, err := strconv.Atoi(limitNum)
-		fmt.Printf("num: %v\n", num)
-		if err != nil {
-			ctx.JSON(http.StatusOK, gin.H{
-				"message": err.Error(),
-			})
-			//return
-		}
+		num, _ := strconv.Atoi(limitNum)
 
 		NewTransactionRequest := entity.TransactionRequest{
 			DescriptionRequest: descAny,
@@ -162,7 +148,6 @@ func (t *TransactionHandler) GetAllTransactionByLogin() gin.HandlerFunc {
 			})
 			return
 		}
-		//fmt.Printf("queryUser: %v\n", queryUser)
 
 		tr, err := t.service.GetAllTransactionByLogin(int(uid), NewTransactionRequest)
 		if err != nil {

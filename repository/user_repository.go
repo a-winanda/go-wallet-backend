@@ -2,20 +2,19 @@ package repository
 
 import (
 	"assignment-golang-backend/entity"
-	"errors"
 	"fmt"
 
 	"gorm.io/gorm"
 )
 
 type UserRepository interface {
-	GetAllUser() ([]*entity.User, error)
 	GetUserByEmail(string) (*entity.User, error)
 	RegisterUser(e *entity.User) error
 	GenerateWallet(int) error
-	GetWalletByUID(uid int) (*entity.Wallet, error)
-	AddWalletBalance(wn, amount int) error
-	ReduceWalletBalance(wn, amount int) error
+	GetWalletByUID(int) (*entity.Wallet, error)
+	AddWalletBalance(int, int) error
+	ReduceWalletBalance(int, int) error
+	GetUserByLogin(int) (*entity.User, error)
 }
 
 type userRepositoryImplementation struct {
@@ -49,16 +48,15 @@ func (u *userRepositoryImplementation) GetUserByEmail(email string) (*entity.Use
 	return user, nil
 }
 
-func (u *userRepositoryImplementation) GetAllUser() ([]*entity.User, error) {
+func (u *userRepositoryImplementation) GetUserByLogin(uid int) (*entity.User, error) {
 
-	var users []*entity.User
+	var user *entity.User
 
-	u.db.Find(&users)
-
-	if users == nil {
-		return nil, errors.New("user database is empty")
+	err := u.db.Where("id = ?", uid).First(&user).Error
+	if err != nil {
+		return nil, err
 	}
-	return users, nil
+	return user, nil
 }
 
 func (u *userRepositoryImplementation) GenerateWallet(id int) error {

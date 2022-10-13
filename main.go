@@ -15,6 +15,8 @@ func main() {
 	db := postgres.DbInit()
 	router := gin.Default()
 
+	router.Static("/docs", "./dist")
+
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserServices(userRepository)
 	userHandler := handler.NewUserHandler(userService)
@@ -23,14 +25,17 @@ func main() {
 	transactionService := service.NewTransactionServices(transactionRepository, userRepository)
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Url not valid"})
+	})
+
 	router.POST("/register", userHandler.RegisterUser())
 	router.POST("/login", userHandler.LoginUser())
-	router.Use(utils.JwtAuthMiddleware()).GET("/users", userHandler.GetAllUser())
+	router.Use(utils.JwtAuthMiddleware()).GET("/user-detail", userHandler.GetUserDetails())
 
 	router.Use(utils.JwtAuthMiddleware()).POST("/top-up", transactionHandler.TopUpWallet())
 	router.Use(utils.JwtAuthMiddleware()).POST("/transfer", transactionHandler.TransferWallet())
 	router.Use(utils.JwtAuthMiddleware()).GET("/transactions", transactionHandler.GetAllTransactionByLogin())
-	//router.Static("/documentation", "dist/")
 
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
