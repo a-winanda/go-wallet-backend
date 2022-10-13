@@ -29,6 +29,7 @@ func main() {
 
 	router.Use(utils.JwtAuthMiddleware()).POST("/top-up", transactionHandler.TopUpWallet())
 	router.Use(utils.JwtAuthMiddleware()).POST("/transfer", transactionHandler.TransferWallet())
+	router.Use(utils.JwtAuthMiddleware()).GET("/transactions", transactionHandler.GetAllTransactionByLogin())
 	//router.Static("/documentation", "dist/")
 
 	router.GET("/ping", func(c *gin.Context) {

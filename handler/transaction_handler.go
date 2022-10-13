@@ -5,8 +5,10 @@ import (
 	"assignment-golang-backend/service"
 	"assignment-golang-backend/utils"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -42,10 +44,18 @@ func (t *TransactionHandler) TopUpWallet() gin.HandlerFunc {
 		}
 
 		uid, err := utils.ExtractTokenID(ctx)
+
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			return
+
+		}
 		td.SourceID = int(uid)
 		td.TargetID = int(uid)
-		//fmt.Printf("ul di handler: %v\n", ul)
-		t.service.TopUpWallet(td)
+
+		err = t.service.TopUpWallet(td)
 
 		if err != nil {
 			ctx.JSON(http.StatusOK, gin.H{
@@ -83,9 +93,17 @@ func (t *TransactionHandler) TransferWallet() gin.HandlerFunc {
 		}
 
 		targetId, err := utils.ExtractTokenID(ctx)
+
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
 		td.SourceID = int(targetId)
-		//fmt.Printf("ul di handler: %v\n", ul)
-		t.service.TransferWallet(td)
+
+		err = t.service.TransferWallet(td)
 
 		if err != nil {
 			ctx.JSON(http.StatusOK, gin.H{
@@ -100,4 +118,64 @@ func (t *TransactionHandler) TransferWallet() gin.HandlerFunc {
 		})
 
 	}
+}
+
+func (t *TransactionHandler) GetAllTransactionByLogin() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		// DefaultTransactionRequest := entity.TransactionRequest{
+		// 	DescriptionRequest: "",
+		// 	SortByEntity:       "created_at",
+		// 	SortOrder:          "desc",
+		// 	Limit:              10,
+		// }
+
+		descReq := ctx.Request.URL.Query().Get("s")
+		sortItem := ctx.Request.URL.Query().Get("sortBy")
+		sortOrder := ctx.Request.URL.Query().Get("sort")
+		limitNum := ctx.Request.URL.Query().Get("limit")
+
+		descAny := fmt.Sprintf("%%%s%%", descReq)
+
+		num, err := strconv.Atoi(limitNum)
+		fmt.Printf("num: %v\n", num)
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			//return
+		}
+
+		NewTransactionRequest := entity.TransactionRequest{
+			DescriptionRequest: descAny,
+			SortByEntity:       sortItem,
+			SortOrder:          sortOrder,
+			Limit:              num,
+		}
+
+		fmt.Printf("NewTransactionRequest: %v\n", NewTransactionRequest)
+
+		uid, err := utils.ExtractTokenID(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		//fmt.Printf("queryUser: %v\n", queryUser)
+
+		tr, err := t.service.GetAllTransactionByLogin(int(uid), NewTransactionRequest)
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "Success",
+			"Data":    tr,
+		})
+	}
+
 }

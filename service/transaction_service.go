@@ -11,6 +11,7 @@ import (
 type TransactionServices interface {
 	TopUpWallet(entity.Transaction) error
 	TransferWallet(e entity.Transaction) error
+	GetAllTransactionByLogin(uid int, e entity.TransactionRequest) ([]*entity.Transaction, error)
 }
 
 type transactionServicesImplementation struct {
@@ -43,7 +44,7 @@ func (t *transactionServicesImplementation) TopUpWallet(e entity.Transaction) er
 
 	e.WalletNumber = wallet.WalletNumber
 	e.TransactionType = "Top Up"
-	e.Description = fmt.Sprintf("Top Up from %d", e.FundID)
+	e.Description = fmt.Sprintf("Top Up from %d", e.Fund.SourceName)
 	e.CreatedAt = time.Now()
 
 	err = t.transactionRepository.CreateTransaction(&e)
@@ -78,6 +79,7 @@ func (t *transactionServicesImplementation) TransferWallet(e entity.Transaction)
 		return errors.New("description need to be less than 35 characters")
 	}
 
+	//e.FundID = 0
 	e.WalletNumber = source.WalletNumber
 	e.TransactionType = "Transfer"
 	e.CreatedAt = time.Now()
@@ -91,4 +93,29 @@ func (t *transactionServicesImplementation) TransferWallet(e entity.Transaction)
 	t.userRepo.ReduceWalletBalance(source.WalletNumber, e.Amount)
 
 	return nil
+}
+
+func (t *transactionServicesImplementation) GetAllTransactionByLogin(uid int, e entity.TransactionRequest) ([]*entity.Transaction, error) {
+
+	DefaultTransactionRequest := entity.TransactionRequest{
+		SortByEntity: "created_at",
+		SortOrder:    "desc",
+		Limit:        10,
+	}
+	if e.SortByEntity == "" {
+		e.SortByEntity = DefaultTransactionRequest.SortByEntity
+	}
+	if e.SortOrder == "" {
+		e.SortOrder = DefaultTransactionRequest.SortOrder
+	}
+	if e.Limit == 0 {
+		e.Limit = 10
+	}
+
+	val, err := t.transactionRepository.GetAllTransactionDefault(uid, e)
+	if err != nil {
+		return nil, err
+	}
+
+	return val, err
 }

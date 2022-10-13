@@ -3,13 +3,14 @@ package repository
 import (
 	"assignment-golang-backend/entity"
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
 
 type TransactionRepository interface {
 	CreateTransaction(e *entity.Transaction) error
-	GetAllTransaction() ([]*entity.Transaction, error)
+	GetAllTransactionDefault(int, entity.TransactionRequest) ([]*entity.Transaction, error)
 }
 
 type transactionRepositoryImplementation struct {
@@ -32,15 +33,20 @@ func (t *transactionRepositoryImplementation) CreateTransaction(e *entity.Transa
 	return nil
 }
 
-func (t *transactionRepositoryImplementation) GetAllTransaction() ([]*entity.Transaction, error) {
+func (t *transactionRepositoryImplementation) GetAllTransactionDefault(uid int, e entity.TransactionRequest) ([]*entity.Transaction, error) {
 
 	var tl []*entity.Transaction
 
-	t.db.Find(&tl)
+	order := fmt.Sprintf("%s %s", e.SortByEntity, e.SortOrder)
+
+	err := t.db.Preload("Fund").Where("source_id = ? AND description ILIKE ?", uid, e.DescriptionRequest).Order(order).Limit(e.Limit).Find(&tl).Error
+
+	if err != nil {
+		return nil, err
+	}
 
 	if tl == nil {
 		return nil, errors.New("transaction list is empty")
-
 	}
 
 	return tl, nil

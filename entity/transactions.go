@@ -1,8 +1,11 @@
 package entity
 
-import "time"
+import (
+	"time"
+)
 
 type Transaction struct {
+	//gorm.Model
 	ID              int       `gorm:"column:id"`
 	WalletNumber    int       `gorm:"column:wallet_number"`
 	TransactionType string    `gorm:"column:transaction_type"`
@@ -12,5 +15,12 @@ type Transaction struct {
 	Amount          int       `gorm:"column:amount"`
 	CreatedAt       time.Time `gorm:"column:created_at"`
 	Description     string    `gorm:"column:description"`
-	Fund            Fund      `gorm:"foreignKey:FundID; references:ID"`
+	Fund            Fund      `gorm:"foreignKey:FundID;references:ID"`
+}
+
+type TransactionRequest struct {
+	DescriptionRequest string
+	SortByEntity       string
+	SortOrder          string
+	Limit              int
 }
