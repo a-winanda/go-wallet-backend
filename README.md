@@ -1,4 +1,4 @@
-### assignment-golang-backend
+### golang-wallet-backend
 
 Project-Description:
 - The app is used for transfering funds via e-wallet that uses external entity such as bank, credit-card, and cash for its top up system.
