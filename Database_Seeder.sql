@@ -1,11 +1,10 @@
-CREATE DATABASE wallet_db_alif_winanda
 
 CREATE TABLE users (
 	id SERIAL PRIMARY KEY,
 	email varchar(256) UNIQUE,
 	password varchar(256),
 	reset_code varchar(256),
-	created_at default current_timestamp,
+	created_at timestamp DEFAULT current_timestamp,
 	updated_at timestamp
 );
 
@@ -29,7 +28,7 @@ CREATE TABLE transactions(
 	fund_id int,
 	target_id int,
 	amount int,
-	created_at default current_timestamp,
+	created_at timestamp default current_timestamp,
 	description varchar
 );
 

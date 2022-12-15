@@ -164,3 +164,4 @@ func (t *TransactionHandler) GetAllTransactionByLogin() gin.HandlerFunc {
 	}
 
 }
+

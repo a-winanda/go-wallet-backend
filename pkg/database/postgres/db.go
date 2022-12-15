@@ -15,8 +15,8 @@ const (
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
-	password = "Jocay-35"
-	dbname   = "wallet_db_alif_winanda"
+	password = "Wepe2710"
+	dbname   = "wallet_db"
 )
 
 func DbInit() *gorm.DB {
